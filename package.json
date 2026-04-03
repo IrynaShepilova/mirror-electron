@@ -1,0 +1,35 @@
+{
+  "name": "mirror",
+  "version": "1.0.0",
+  "description": "Simple mirror app for macOS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir",
+    "fix-sign": "codesign --remove-signature \"dist/mac-arm64/Mirror.app\" || true && codesign --force --deep --sign - \"dist/mac-arm64/Mirror.app\" && codesign --verify --deep --strict --verbose=2 \"dist/mac-arm64/Mirror.app\"",
+    "build:mac": "rm -rf dist && npm run dist && npm run fix-sign"
+  },
+  "devDependencies": {
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1",
+    "typescript": "^5.5.3"
+  },
+  "build": {
+    "appId": "com.iryna.mirrorapp",
+    "productName": "Mirror",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html"
+    ],
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.utilities",
+      "identity": "-",
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "This app needs camera access to show your mirror view."
+      }
+    }
+  }
+}

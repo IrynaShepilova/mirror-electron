@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirror</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #video {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #111;
+    }
+
+    #msg {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 10;
+      color: white;
+      font: 14px/1.4 sans-serif;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 12px;
+      border-radius: 8px;
+      max-width: 70vw;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+<video id="video" autoplay playsinline muted></video>
+<div id="msg">Starting camera…</div>
+
+<script>
+  const video = document.getElementById('video');
+  const msg = document.getElementById('msg');
+
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user',
+          width: { ideal: 2560 },
+          height: { ideal: 1440 }
+        },
+        audio: false
+      });
+
+      msg.textContent = `Tracks: ${stream.getVideoTracks().length}`;
+      console.log('Stream:', stream);
+      console.log('Video tracks:', stream.getVideoTracks());
+
+      video.srcObject = stream;
+
+      video.onloadedmetadata = async () => {
+        try {
+          await video.play();
+          msg.textContent =
+                  `Camera started\n` +
+                  `videoWidth: ${video.videoWidth}\n` +
+                  `videoHeight: ${video.videoHeight}`;
+        } catch (e) {
+          msg.textContent = 'video.play() failed: ' + e.message;
+          console.error(e);
+        }
+      };
+    } catch (err) {
+      msg.textContent = 'getUserMedia failed: ' + err.name + ' / ' + err.message;
+      console.error(err);
+    }
+  }
+
+  startCamera();
+</script>
+</body>
+</html>
