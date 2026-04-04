@@ -17,6 +17,7 @@ async function createWindow() {
         height: 800,
         backgroundColor: '#000000',
         autoHideMenuBar: true,
+        icon: path.join(__dirname, 'resources/icon.icns'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
